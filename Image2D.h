@@ -2,25 +2,25 @@
 #include "stb_image.h"
 
 #include <string>
+#include <vector>
 
-class ImageReader
+class Image2D
 {
 public:
-    ImageReader(std::string file);
-    ImageReader();
+    Image2D(std::string file);
+    Image2D();
+    Image2D(const Image2D& rhs);
 
     int GetHeight();
     int GetWidth();
     int GetChannels();
-    unsigned char* Data();
+    const std::vector<unsigned char>& GetData();
 
 private:
 
     int m_height;
     int m_width;
     int m_channels;
-    unsigned char* m_data = nullptr;
-
-
+    std::vector<unsigned char> m_data;
 
 };
