@@ -13,47 +13,47 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+     -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+     -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+     -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+     -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 // world space positions of our cubes
 glm::vec3 cubePositions[] = {
@@ -76,7 +76,7 @@ int main()
         return -1;
     }
 
-    Shader shader("..\\..\\shader_source\\cube.vert", "..\\..\\shader_source\\cube.frag");
+    Shader shader("..\\..\\shader_source\\light.vert", "..\\..\\shader_source\\light.frag");
     Image2D wallImage("..\\..\\textures\\wall.jpg");
     
     Texture2D texture1;
@@ -100,15 +100,15 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
 
     shader.Use();
-    shader.setInt("texture1", 0);
+    //shader.setInt("texture1", 0);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -130,22 +130,22 @@ int main()
         // camera/view transformation
         glm::mat4 view = g_camera.GetVieMatrix();
         shader.setMarix4f("view", view);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        shader.setMarix4f("model", model);
+
+
+        shader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
+        shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+        shader.setVec3("viewPos", g_camera.GetPosition());
+
         
         shader.Use();
 
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
        
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMarix4f("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glBindVertexArray(0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

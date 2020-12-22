@@ -88,3 +88,8 @@ void Shader::setMarix4f(const char * name, glm::mat4 matrix)
 {
     glUniformMatrix4fv(glGetUniformLocation(m_id,name), 1,GL_FALSE,glm::value_ptr(matrix));
 }
+
+void Shader::setVec3(const char * name, glm::vec3 vec)
+{
+    glUniform3fv(glGetUniformLocation(m_id, name), 1, &vec[0]);
+}

@@ -97,6 +97,11 @@ void Camera::SetFPS(float fps)
     Fps = fps;
 }
 
+glm::vec3 Camera::GetPosition()
+{
+    return Position;
+}
+
 void Camera::Update()
 {
     glm::vec3 front;

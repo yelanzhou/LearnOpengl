@@ -31,6 +31,8 @@ public:
 
     void MoveCamera(Camera_Movement direction);
     void SetFPS(float fps);
+
+    glm::vec3 GetPosition();
 private:
 
     // camera Attributes

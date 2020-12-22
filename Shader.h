@@ -14,6 +14,7 @@ public:
     void setFloat(const char* name,float value);
     void setInt(const char* name, int value);
     void setMarix4f(const char* name, glm::mat4 matrix);
+    void setVec3(const char* name, glm::vec3 vec);
 
 private:
     unsigned int m_id;
