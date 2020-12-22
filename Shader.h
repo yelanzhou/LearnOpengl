@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <string>
 class Shader
 {
@@ -10,6 +13,7 @@ public:
     void Use();
     void setFloat(const char* name,float value);
     void setInt(const char* name, int value);
+    void setMarix4f(const char* name, glm::mat4 matrix);
 
 private:
     unsigned int m_id;
