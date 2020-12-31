@@ -76,7 +76,7 @@ int main()
         return -1;
     }
 
-    Shader shader("..\\..\\shader_source\\light.vert", "..\\..\\shader_source\\light.frag");
+    Shader shader("..\\..\\shader_source\\material.vert", "..\\..\\shader_source\\material.frag");
     Image2D wallImage("..\\..\\textures\\wall.jpg");
     
     Texture2D texture1;
@@ -121,8 +121,8 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glActiveTexture(GL_TEXTURE0);
-        texture1.Bind();
+      /*  glActiveTexture(GL_TEXTURE0);
+        texture1.Bind();*/
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(g_camera.GetZoom()), (float)800 / (float)600, 0.1f, 100.0f);
         shader.setMarix4f("projection", projection);
@@ -134,11 +134,19 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         shader.setMarix4f("model", model);
 
-
-        shader.setVec3("objectColor",glm::vec3( 1.0f, 0.5f, 0.31f));
-        shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    
         shader.setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
         shader.setVec3("viewPos", g_camera.GetPosition());
+
+        shader.setVec3("light.ambient", glm::vec3(0.2,0.2,0.2));
+        shader.setVec3("light.diffuse", glm::vec3(0.5,0.5,0.5));
+        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        // material properties
+        shader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+        shader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        shader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f)); // specular lighting doesn't have full effect on this object's material
+        shader.setFloat("material.shininess", 32.0f);
 
         
         shader.Use();
