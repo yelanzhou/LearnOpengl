@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Image2D.h"
 #include "Texture2D.h"
+#include "Light.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -77,7 +78,8 @@ int main()
         return -1;
     }
 
-    Shader shader("..\\..\\shader_source\\light_texture.vert", "..\\..\\shader_source\\light_texture.frag");
+    glEnable(GL_DEPTH_TEST);
+    Shader shader("..\\..\\shader_source\\attenuation.vert", "..\\..\\shader_source\\attenuation.frag");
 
     Image2D containerImage("..\\..\\textures\\container2.png");  
     Texture2D texture0;
@@ -86,6 +88,10 @@ int main()
     Image2D specularImage("..\\..\\textures\\container2_specular.png");
     Texture2D texture1;
     texture1.setImage(specularImage);
+
+    
+    Light light;
+    light.setPosition(glm::vec3(1.2f, 1.0f, 2.0f));
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -129,7 +135,7 @@ int main()
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         texture0.Bind();
@@ -150,22 +156,31 @@ int main()
         shader.setMarix4f("model", model);
 
     
-        shader.setVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+       
         shader.setVec3("viewPos", g_camera.GetPosition());
 
-        shader.setVec3("light.ambient", glm::vec3(0.2,0.2,0.2));
-        shader.setVec3("light.diffuse", glm::vec3(0.5,0.5,0.5));
-        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-        // material properties     
-        shader.setFloat("material.shininess", 64.0f);
-
-        
+        shader.setVec3("light.ambient", light.getAmbientColor());
+        shader.setVec3("light.diffuse", light.getDiffuseColor());
+        shader.setVec3("light.specular", light.getSpecularColor());
+        shader.setVec3("light.position", light.getPosition());
+        shader.setFloat("light.constant", light.getAttenuationConstant());
+        shader.setFloat("light.linear", light.getAttenuationLinear());
+        shader.setFloat("light.quadratic", light.getAttenuationQuadartic());
+    
+        shader.setFloat("material.shininess", 32.0f); 
         shader.Use();
 
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
        
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (int i = 0; i < 10; ++i)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            shader.setMarix4f("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glBindVertexArray(0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
