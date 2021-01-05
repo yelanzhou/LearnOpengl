@@ -102,6 +102,11 @@ glm::vec3 Camera::GetPosition()
     return Position;
 }
 
+glm::vec3 Camera::getFront()
+{
+    return Front;
+}
+
 void Camera::Update()
 {
     glm::vec3 front;

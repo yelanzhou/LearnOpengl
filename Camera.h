@@ -33,6 +33,8 @@ public:
     void SetFPS(float fps);
 
     glm::vec3 GetPosition();
+
+    glm::vec3 getFront();
 private:
 
     // camera Attributes

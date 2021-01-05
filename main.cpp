@@ -79,7 +79,7 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
-    Shader shader("..\\..\\shader_source\\attenuation.vert", "..\\..\\shader_source\\attenuation.frag");
+    Shader shader("..\\..\\shader_source\\spot_light.vert", "..\\..\\shader_source\\spot_light.frag");
 
     Image2D containerImage("..\\..\\textures\\container2.png");  
     Texture2D texture0;
@@ -91,7 +91,8 @@ int main()
 
     
     Light light;
-    light.setPosition(glm::vec3(1.2f, 1.0f, 2.0f));
+    light.setLightType(Light::LightType::Spot);
+    //light.setPosition(glm::vec3(1.2f, 1.0f, 2.0f));
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -131,6 +132,8 @@ int main()
         // input
         // -----
         processInput(window);
+        light.setPosition(g_camera.GetPosition());
+        light.setDirection(g_camera.getFront());
 
         // render
         // ------
@@ -159,13 +162,16 @@ int main()
        
         shader.setVec3("viewPos", g_camera.GetPosition());
 
-        shader.setVec3("light.ambient", light.getAmbientColor());
-        shader.setVec3("light.diffuse", light.getDiffuseColor());
-        shader.setVec3("light.specular", light.getSpecularColor());
-        shader.setVec3("light.position", light.getPosition());
-        shader.setFloat("light.constant", light.getAttenuationConstant());
-        shader.setFloat("light.linear", light.getAttenuationLinear());
-        shader.setFloat("light.quadratic", light.getAttenuationQuadartic());
+        shader.setVec3("spotLight.ambient", light.getAmbientColor());
+        shader.setVec3("spotLight.diffuse", light.getDiffuseColor());
+        shader.setVec3("spotLight.specular", light.getSpecularColor());
+        shader.setVec3("spotLight.pos", light.getPosition());
+        shader.setFloat("spotLight.cutOff", light.getCutterOff());
+        shader.setFloat("spotLight.outterCutOff", light.getOuterCutterOff());
+        shader.setVec3("spotLight.direction", light.getDirection());
+        shader.setFloat("spotLight.constant", light.getAttenuationConstant());
+        shader.setFloat("spotLight.linear", light.getAttenuationLinear());
+        shader.setFloat("spotLight.quadratic", light.getAttenuationQuadartic());
     
         shader.setFloat("material.shininess", 32.0f); 
         shader.Use();

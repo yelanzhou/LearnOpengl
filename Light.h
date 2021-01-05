@@ -50,7 +50,7 @@ private:
     glm::vec3  _pos;
     glm::vec3  _dir;
     glm::vec4 _diffuseColor = glm::vec4(0.8,0.8,0.8,1);
-    glm::vec4 _ambientColor = glm::vec4(0.05,0.05,0.05,1);
+    glm::vec4 _ambientColor = glm::vec4(0.1,0.1,0.1,1);
     glm::vec4 _specularColor = glm::vec4(1.0,1.0,1.0,1.0);
 
     float     _attenuationConstant = 1.0f;
