@@ -70,6 +70,14 @@ glm::vec3 cubePositions[] = {
     glm::vec3(1.5f,  0.2f, -1.5f),
     glm::vec3(-1.3f,  1.0f, -1.5f) };
 
+// Positions of the point lights
+glm::vec3 pointLightPositions[] = {
+    glm::vec3(0.7f,  0.2f,  2.0f),
+    glm::vec3(2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f,  2.0f, -12.0f),
+    glm::vec3(0.0f,  0.0f, -3.0f)
+};
+
 int main()
 {
     GLFWwindow* window;
@@ -79,7 +87,7 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
-    Shader shader("..\\..\\shader_source\\spot_light.vert", "..\\..\\shader_source\\spot_light.frag");
+    Shader shader("..\\..\\shader_source\\multi_light.vert", "..\\..\\shader_source\\multi_light.frag");
 
     Image2D containerImage("..\\..\\textures\\container2.png");  
     Texture2D texture0;
@@ -90,9 +98,19 @@ int main()
     texture1.setImage(specularImage);
 
     
-    Light light;
-    light.setLightType(Light::LightType::Spot);
-    //light.setPosition(glm::vec3(1.2f, 1.0f, 2.0f));
+    Light dirLight;
+    dirLight.setLightType(Light::LightType::Direction);
+    dirLight.setDirection(glm::vec3(-0.2f, -1.0f, -0.3f));
+    dirLight.setAmbientColor(glm::vec4( 0.05f, 0.05f, 0.05f,1.0f));
+    dirLight.setDiffuseColor(glm::vec4( 0.4f, 0.4f, 0.4f,1.0f));
+    dirLight.setSpecularColor(glm::vec4(0.5f, 0.5f, 0.5f,1.0f));
+   
+    Light pointLights[4];
+    for (int i = 0; i < 4; ++i)
+    {
+        pointLights[i].setLightType(Light::LightType::Point);
+        pointLights->setPosition(pointLightPositions[i]);
+    }
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -132,8 +150,7 @@ int main()
         // input
         // -----
         processInput(window);
-        light.setPosition(g_camera.GetPosition());
-        light.setDirection(g_camera.getFront());
+
 
         // render
         // ------
@@ -162,16 +179,30 @@ int main()
        
         shader.setVec3("viewPos", g_camera.GetPosition());
 
-        shader.setVec3("spotLight.ambient", light.getAmbientColor());
-        shader.setVec3("spotLight.diffuse", light.getDiffuseColor());
-        shader.setVec3("spotLight.specular", light.getSpecularColor());
-        shader.setVec3("spotLight.pos", light.getPosition());
-        shader.setFloat("spotLight.cutOff", light.getCutterOff());
-        shader.setFloat("spotLight.outterCutOff", light.getOuterCutterOff());
-        shader.setVec3("spotLight.direction", light.getDirection());
-        shader.setFloat("spotLight.constant", light.getAttenuationConstant());
-        shader.setFloat("spotLight.linear", light.getAttenuationLinear());
-        shader.setFloat("spotLight.quadratic", light.getAttenuationQuadartic());
+        shader.setVec3("dirLight.ambient", dirLight.getAmbientColor());
+        shader.setVec3("dirLight.diffuse", dirLight.getDiffuseColor());
+        shader.setVec3("dirLight.specular", dirLight.getSpecularColor());
+        shader.setVec3("dirLight.direction", dirLight.getDirection());
+
+
+        for (int i = 0; i < 4; ++i)
+        {
+            std::string ambient = std::string("pointLights[") + std::to_string(i) + std::string("].ambient");
+            std::string diffuse = std::string("pointLights[") + std::to_string(i) + std::string("].diffuse");
+            std::string specular = std::string("pointLights[") + std::to_string(i) + std::string("].specular");
+            std::string position = std::string("pointLights[") + std::to_string(i) + std::string("].position");
+            std::string constant = std::string("pointLights[") + std::to_string(i) + std::string("].constant");
+            std::string linear = std::string("pointLights[") + std::to_string(i) + std::string("].linear");
+            std::string quadratic = std::string("pointLights[") + std::to_string(i) + std::string("].quadratic");
+            shader.setVec3(ambient.c_str(), pointLights[i].getAmbientColor());
+            shader.setVec3(diffuse.c_str(), pointLights[i].getDiffuseColor());
+            shader.setVec3(specular.c_str(), pointLights[i].getSpecularColor());
+            shader.setVec3(position.c_str(), pointLights[i].getPosition());
+            shader.setFloat(constant.c_str(), pointLights[i].getAttenuationConstant());
+            shader.setFloat(linear.c_str(), pointLights[i].getAttenuationLinear());
+            shader.setFloat(quadratic.c_str(), pointLights[i].getAttenuationQuadartic());
+        }
+
     
         shader.setFloat("material.shininess", 32.0f); 
         shader.Use();
