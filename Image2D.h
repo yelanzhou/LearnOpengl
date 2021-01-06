@@ -11,16 +11,21 @@ public:
     Image2D();
     Image2D(const Image2D& rhs);
 
+    Image2D& operator=(const Image2D& rhs);
+
     int GetHeight();
     int GetWidth();
     int GetChannels();
     const std::vector<unsigned char>& GetData();
 
+    std::string getPath();
+
 private:
 
-    int m_height;
-    int m_width;
-    int m_channels;
-    std::vector<unsigned char> m_data;
+    std::string _path;
+    int _height;
+    int _width;
+    int _channels;
+    std::vector<unsigned char> _data;
 
 };

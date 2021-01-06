@@ -1,11 +1,12 @@
 #include "Image2D.h"
 
 Image2D::Image2D(std::string file)
+    :_path(file)
 {
-  unsigned char* data = stbi_load(file.c_str(), &m_width, &m_height, &m_channels, 0);
+  unsigned char* data = stbi_load(file.c_str(), &_width, &_height, &_channels, 0);
 
-  m_data.resize(m_width*m_height*m_channels);
-  std::copy(data, data + m_data.size(), m_data.data());
+  _data.resize(_width*_height*_channels);
+  std::copy(data, data + _data.size(), _data.data());
    
   stbi_image_free(data);
 }
@@ -16,29 +17,45 @@ Image2D::Image2D()
 }
 
 Image2D::Image2D(const Image2D & rhs)
-    :m_width(rhs.m_width)
-    ,m_height(rhs.m_height)
-    ,m_channels(rhs.m_channels)
-    ,m_data(rhs.m_data)
+    :_width(rhs._width)
+    ,_height(rhs._height)
+    ,_channels(rhs._channels)
+    ,_data(rhs._data)
+    ,_path(rhs._path)
 {
+}
+
+Image2D & Image2D::operator=(const Image2D & rhs)
+{
+    _width = rhs._width;
+    _height = rhs._height;
+    _channels = rhs._channels;
+    _data = rhs._data;
+    _path = rhs._path;
+    return *this;
 }
 
 int Image2D::GetHeight()
 {
-    return m_height;
+    return _height;
 }
 
 int Image2D::GetWidth()
 {
-    return m_width;
+    return _width;
 }
 
 int Image2D::GetChannels()
 {
-    return m_channels;
+    return _channels;
 }
 
 const std::vector<unsigned char>& Image2D::GetData()
 {
-    return m_data;
+    return _data;
+}
+
+std::string Image2D::getPath()
+{
+    return _path;
 }

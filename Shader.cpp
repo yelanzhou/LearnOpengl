@@ -79,7 +79,7 @@ void Shader::setFloat(const char* name,float value)
     glUniform1f(glGetUniformLocation(m_id, name), value);
 }
 
-void Shader::setInt(const char * name, int value)
+void Shader::setInt(const char * name, int value) const
 {
     glUniform1i(glGetUniformLocation(m_id, name), value);
 }

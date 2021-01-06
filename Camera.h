@@ -47,14 +47,14 @@ private:
     float Yaw;
     float Pitch;
     // camera options
-    float MovementSpeed = 2.5;
-    float MouseSensitivity = 0.1;
-    float Zoom = 45;
+    float MovementSpeed = 2.5f;
+    float MouseSensitivity = 0.1f;
+    float Zoom = 45.0f;
 
     double LastMouseX;
     double LastMouseY;
     bool   firstMouse;
-    double Fps = 0.0;
+    double Fps = 0.0f;
     
     
 };

@@ -10,10 +10,11 @@ add_definitions("-std=c++11")
 file(GLOB SOURCES_FILES *.cpp SOURCES_FILES *.c)
 file(GLOB HEADER_FILES *.h)
 
+
 LINK_DIRECTORIES("D:/Opengl/thirdLib/Release/GLFW/lib")
 include_directories("D:/Opengl/thirdLib/Release/GLFW/include")
 add_executable(OpenGL ${SOURCES_FILES} ${HEADER_FILES})
-target_link_libraries(OpenGL glfw3 opengl32)
+target_link_libraries(OpenGL glfw3 opengl32 assimp-vc141-mt)
 
 #target_link_libraries(OpenGL opengl32 glfw3.lib)
 
