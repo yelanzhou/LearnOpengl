@@ -10,12 +10,24 @@
 #include "Model.h"
 #include "CubeModel.h"
 #include "PlaneModel.h"
+#include "VegetableModel.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 // world space positions of our cubes
+
+std::vector<glm::vec3> vegetation
+{
+    glm::vec3(-1.5f, 0.0f, -0.48f),
+    glm::vec3(1.5f, 0.0f, 0.51f),
+    glm::vec3(0.0f, 0.0f, 0.7f),
+    glm::vec3(-0.3f, 0.0f, -2.3f),
+    glm::vec3(0.5f, 0.0f, -0.6f)
+};
+
 
 int main()
 {
@@ -30,18 +42,12 @@ int main()
 
 
     Shader shader("..\\..\\shader_source\\model.vert", "..\\..\\shader_source\\model.frag");
-    Shader colorShader("..\\..\\shader_source\\color.vert", "..\\..\\shader_source\\color.frag");
-    
-
-
-    shader.Use();
-   // Model model("../../resources/backpack/backpack.obj");
+    Shader vegetableShader("..\\..\\shader_source\\vegetable.vert", "..\\..\\shader_source\\vegetable.frag");
 
 
     CubeModel  cube("../../textures/container2.png", "../../textures/container2_specular.png");
-    
-
     PlaneModel plane("../../textures/OIP.jpg", "../../textures/OIP.jpg");
+    VegetableModel vegetableModel("../../textures/grass.png", "../../textures/grass.png");
 
     // render loop
     // -----------
@@ -67,8 +73,7 @@ int main()
         glm::mat4 view = g_camera.GetVieMatrix();
         shader.setMarix4f("view", view);
 
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
-      
+        glm::mat4 modelMatrix = glm::mat4(1.0f);     
         shader.setMarix4f("model", modelMatrix);
 
         //cube.draw(shader);
@@ -83,6 +88,20 @@ int main()
         modelMatrix = glm::translate(modelMatrix, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMarix4f("model", modelMatrix);
         cube.draw(shader);
+
+
+        vegetableShader.Use();
+        vegetableShader.setMarix4f("projection", projection);
+        vegetableShader.setMarix4f("view", view);
+
+        for (int i = 0; i < vegetation.size(); ++i)
+        {
+            auto vegetableModelMatrix = glm::mat4(1.0f);
+            vegetableModelMatrix = glm::translate(vegetableModelMatrix, vegetation[i]);
+            shader.setMarix4f("model", vegetableModelMatrix);
+            vegetableModel.draw(vegetableShader);
+
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
