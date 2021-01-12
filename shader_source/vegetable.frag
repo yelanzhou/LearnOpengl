@@ -9,10 +9,6 @@ void main()
 {    
     vec4 texColor = texture(texture_diffuse1, TexCoords);
 
-    if(texColor.a < 0.1)
-    {
-        discard;
-    }
 
     FragColor = texColor; 
 }

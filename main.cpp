@@ -12,8 +12,10 @@
 #include "PlaneModel.h"
 #include "VegetableModel.h"
 
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <map>
 
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
@@ -39,10 +41,12 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    Shader shader("..\\..\\shader_source\\model.vert", "..\\..\\shader_source\\model.frag");
-    Shader vegetableShader("..\\..\\shader_source\\vegetable.vert", "..\\..\\shader_source\\vegetable.frag");
+    Shader shader("../../shader_source/model.vert", "../../shader_source/model.frag");
+    Shader vegetableShader("../../shader_source/vegetable.vert", "../../shader_source/vegetable.frag");
 
 
     CubeModel  cube("../../textures/container2.png", "../../textures/container2_specular.png");
@@ -94,13 +98,19 @@ int main()
         vegetableShader.setMarix4f("projection", projection);
         vegetableShader.setMarix4f("view", view);
 
+        std::map<float, glm::vec3> windows;
         for (int i = 0; i < vegetation.size(); ++i)
         {
+            float distance = glm::distance(g_camera.GetPosition(), vegetation[i]);
+            windows[distance] = vegetation[i];
+        }
+
+        for (auto iter = windows.rbegin(); iter != windows.rend(); ++iter)
+        {
             auto vegetableModelMatrix = glm::mat4(1.0f);
-            vegetableModelMatrix = glm::translate(vegetableModelMatrix, vegetation[i]);
+            vegetableModelMatrix = glm::translate(vegetableModelMatrix, iter->second);
             shader.setMarix4f("model", vegetableModelMatrix);
             vegetableModel.draw(vegetableShader);
-
         }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
