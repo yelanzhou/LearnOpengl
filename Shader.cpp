@@ -36,7 +36,7 @@ Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile)
     if (!success)
     {
         glGetShaderInfoLog(vShader, 512, NULL, log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
+        std::cout << vertexShaderFile <<"  ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
     }
 
     unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -47,7 +47,7 @@ Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile)
     if (!success)
     {
         glGetShaderInfoLog(fShader, 512, NULL, log);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
+        std::cout << fragShaderFile <<" ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << log << std::endl;
     }
 
     m_id = glCreateProgram();

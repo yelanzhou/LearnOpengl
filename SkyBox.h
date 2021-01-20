@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Shader.h"
+#include "TextureCube.h"
 #include <string>
+#include <memory>
 
 
 
@@ -18,6 +20,8 @@ private:
     unsigned int _VAO;
     unsigned int _VBO;
     unsigned int _EBO;
+
+    std::shared_ptr<TextureCube> _texture;
 
 
 

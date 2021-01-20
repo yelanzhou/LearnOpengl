@@ -56,6 +56,7 @@ CubeModel::CubeModel(std::string diffuse, std::string specular,float a,float b,f
         vertex.normal = glm::vec3(vertices[8 * i+3], vertices[8 * i + 4], vertices[8 * i + 5]);
         vertex.texCoord = glm::vec2(vertices[8 * i + 6], vertices[8 * i + 7]);
         vertexes.push_back(vertex);
+
     }
 
     std::vector<unsigned int> indices =

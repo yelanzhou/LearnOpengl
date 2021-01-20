@@ -54,7 +54,7 @@ private:
     double LastMouseX;
     double LastMouseY;
     bool   firstMouse;
-    double Fps = 0.0f;
+    double Fps = 20.0f;
     
     
 };

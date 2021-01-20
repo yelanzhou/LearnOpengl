@@ -25,7 +25,7 @@ void processInput(GLFWwindow *window)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    //g_camera.SetMousePos(xpos, ypos);
+    g_camera.SetMousePos(xpos, ypos);
 }
 
 

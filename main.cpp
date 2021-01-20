@@ -13,6 +13,7 @@
 #include "VegetableModel.h"
 #include "FrameBuffer.h"
 #include "QuadModel.h"
+#include "SkyBox.h"
 
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -47,16 +48,21 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
+
     Shader shader("../../shader_source/model.vert", "../../shader_source/model.frag");
     Shader vegetableShader("../../shader_source/vegetable.vert", "../../shader_source/vegetable.frag");
-    Shader quadShader("../../shader_source/quad_normal.vert", "../../shader_source/quad_normal.frag");
-    quadShader.setInt("screenTexture", 0);
+
+
+    Shader skyBoxShader("../../shader_source/sky_box.vert", "../../shader_source/sky_box.frag");
+    skyBoxShader.setInt("skyBox", 0);
+
+   
 
 
     CubeModel  cube("../../textures/container2.png", "../../textures/container2_specular.png");
     PlaneModel plane("../../textures/OIP.jpg", "../../textures/OIP.jpg");
     VegetableModel vegetableModel("../../textures/grass.png", "../../textures/grass.png");
-
+    SkyBox skyBox("../../textures/skybox/");
 
 
     FrameBuffer frameBuffer(800, 600);
@@ -74,35 +80,30 @@ int main()
      
         // render
         // ------
-        frameBuffer.bind();
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-
-
-       
-        shader.Use();
-
         // pass projection matrix to shader (note that in this case it could change every frame)
         glm::mat4 projection = glm::perspective(glm::radians(g_camera.GetZoom()), (float)800 / (float)600, 0.1f, 100.0f);
-        shader.setMarix4f("projection", projection);
 
-        // camera/view transformation
+   
+
+        shader.Use();
+        shader.setMarix4f("projection", projection);
         glm::mat4 view = g_camera.GetVieMatrix();
         shader.setMarix4f("view", view);
 
         glm::mat4 modelMatrix = glm::mat4(1.0f);     
         shader.setMarix4f("model", modelMatrix);
 
-        //cube.draw(shader);
+        cube.draw(shader);
         plane.draw(shader);
 
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-1.0f, 0.0f, -1.0f));
+        //modelMatrix = glm::scale(modelMatrix, glm::vec3(2, 2, 2));
         shader.setMarix4f("model", modelMatrix);
         
         cube.draw(shader);
@@ -130,21 +131,14 @@ int main()
             shader.setMarix4f("model", vegetableModelMatrix);
             vegetableModel.draw(vegetableShader);
         }
+ 
 
-         //now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-        // clear all relevant buffers
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        quadShader.Use();
-        
-        glActiveTexture(GL_TEXTURE0);
-        frameBuffer.bindColorTexture();
-    
-        quad.draw(quadShader);
-
+        glDepthFunc(GL_LEQUAL);
+        skyBoxShader.Use();
+        skyBoxShader.setMarix4f("projection", projection);
+        skyBoxShader.setMarix4f("view", glm::mat4(glm::mat3(g_camera.GetVieMatrix())));
+        skyBox.draw(skyBoxShader);
+        glDepthFunc(GL_LESS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
