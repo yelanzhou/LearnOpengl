@@ -24,14 +24,6 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 // world space positions of our cubes
 
-std::vector<glm::vec3> vegetation
-{
-    glm::vec3(-1.5f, 0.0f, -0.48f),
-    glm::vec3(1.5f, 0.0f, 0.51f),
-    glm::vec3(0.0f, 0.0f, 0.7f),
-    glm::vec3(-0.3f, 0.0f, -2.3f),
-    glm::vec3(0.5f, 0.0f, -0.6f)
-};
 
 
 int main()
@@ -49,24 +41,24 @@ int main()
 
 
 
-    Shader shader("../../shader_source/model.vert", "../../shader_source/model.frag");
-    Shader vegetableShader("../../shader_source/vegetable.vert", "../../shader_source/vegetable.frag");
-
-
-    Shader skyBoxShader("../../shader_source/sky_box.vert", "../../shader_source/sky_box.frag");
-    skyBoxShader.setInt("skyBox", 0);
-
-   
-
-
+    Shader shader("../../shader_source/uniform_buffer.vert", "../../shader_source/uniform_buffer.frag");
     CubeModel  cube("../../textures/container2.png", "../../textures/container2_specular.png");
-    PlaneModel plane("../../textures/OIP.jpg", "../../textures/OIP.jpg");
-    VegetableModel vegetableModel("../../textures/grass.png", "../../textures/grass.png");
-    SkyBox skyBox("../../textures/skybox/");
 
 
-    FrameBuffer frameBuffer(800, 600);
-    QuadModel quad;
+    unsigned int uniformBuffer;
+    glGenBuffers(1, &uniformBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniformBuffer, 0, 3 * sizeof(glm::mat4));
+
+
+    unsigned int uniformBlockIndexRed = glGetUniformBlockIndex(shader.getProgramID(), "MVP");
+
+
+    glUniformBlockBinding(shader.getProgramID(), uniformBlockIndexRed, 0);
+
 
     // render loop
     // -----------
@@ -91,54 +83,22 @@ int main()
    
 
         shader.Use();
-        shader.setMarix4f("projection", projection);
-        glm::mat4 view = g_camera.GetVieMatrix();
-        shader.setMarix4f("view", view);
-
-        glm::mat4 modelMatrix = glm::mat4(1.0f);     
-        shader.setMarix4f("model", modelMatrix);
-
-        cube.draw(shader);
-        plane.draw(shader);
-
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(-1.0f, 0.0f, -1.0f));
-        //modelMatrix = glm::scale(modelMatrix, glm::vec3(2, 2, 2));
-        shader.setMarix4f("model", modelMatrix);
         
+        glm::mat4 view = g_camera.GetVieMatrix();
+        glm::mat4 model = glm::mat4(1.0f);   
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+        glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(model));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        
+
+
+
+       
+
         cube.draw(shader);
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(2.0f, 0.0f, 0.0f));
-        shader.setMarix4f("model", modelMatrix);
-        cube.draw(shader);
-
-
-        vegetableShader.Use();
-        vegetableShader.setMarix4f("projection", projection);
-        vegetableShader.setMarix4f("view", view);
-
-        std::map<float, glm::vec3> windows;
-        for (int i = 0; i < vegetation.size(); ++i)
-        {
-            float distance = glm::distance(g_camera.GetPosition(), vegetation[i]);
-            windows[distance] = vegetation[i];
-        }
-
-        for (auto iter = windows.rbegin(); iter != windows.rend(); ++iter)
-        {
-            auto vegetableModelMatrix = glm::mat4(1.0f);
-            vegetableModelMatrix = glm::translate(vegetableModelMatrix, iter->second);
-            shader.setMarix4f("model", vegetableModelMatrix);
-            vegetableModel.draw(vegetableShader);
-        }
- 
-
-        glDepthFunc(GL_LEQUAL);
-        skyBoxShader.Use();
-        skyBoxShader.setMarix4f("projection", projection);
-        skyBoxShader.setMarix4f("view", glm::mat4(glm::mat3(g_camera.GetVieMatrix())));
-        skyBox.draw(skyBoxShader);
-        glDepthFunc(GL_LESS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

@@ -16,6 +16,8 @@ public:
     void setMarix4f(const char* name, glm::mat4 matrix);
     void setVec3(const char* name, glm::vec3 vec);
 
+    unsigned int getProgramID();
+
 private:
     unsigned int m_id;
 };

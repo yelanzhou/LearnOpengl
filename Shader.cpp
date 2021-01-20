@@ -93,3 +93,8 @@ void Shader::setVec3(const char * name, glm::vec3 vec)
 {
     glUniform3fv(glGetUniformLocation(m_id, name), 1, &vec[0]);
 }
+
+unsigned int Shader::getProgramID()
+{
+    return m_id;
+}
