@@ -25,11 +25,15 @@ float lastFrame = 0.0f;
 // world space positions of our cubes
 
 
-float points[] = {
-    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
-     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
-     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
-    -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
+float quadVertices1[] = {
+    // positions     // colors
+    -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+     0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+    -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+
+    -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+     0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+     0.05f,  0.05f,  0.0f, 1.0f, 1.0f
 };
 
 int main()
@@ -45,6 +49,27 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1f;
+    for (int y = -10; y < 10; y += 2)
+    {
+        for (int x = -10; x < 10; x += 2)
+        {
+            glm::vec2 translation;
+            translation.x = (float)x / 10.0f + offset;
+            translation.y = (float)y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
+
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
     unsigned int VAO;
     unsigned int VBO;
 
@@ -54,21 +79,27 @@ int main()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices1), &quadVertices1, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),(void*) 0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
+
     glBindVertexArray(0);
 
 
 
 
-    glBindVertexArray(0);
 
 
-
-    Shader shader("../../shader_source/geometry.vert", "../../shader_source/geometry.frag","../../shader_source/geometry.gs");
+    Shader shader("../../shader_source/instance.vert", "../../shader_source/instance.frag");
 
 
     // render loop
@@ -95,7 +126,8 @@ int main()
 
         shader.Use();
         glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, 4);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100); // 100 triangles of 6 vertices each
+        glBindVertexArray(0);
 
 
 
