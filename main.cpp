@@ -52,11 +52,7 @@ int main()
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniformBuffer, 0, 3 * sizeof(glm::mat4));
-
-
     unsigned int uniformBlockIndexRed = glGetUniformBlockIndex(shader.getProgramID(), "MVP");
-
-
     glUniformBlockBinding(shader.getProgramID(), uniformBlockIndexRed, 0);
 
 

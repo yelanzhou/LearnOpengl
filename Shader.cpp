@@ -4,55 +4,30 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile)
+Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile,std::string geoShaderFile)
 {
-    std::ifstream vertexShaderFileStream;
-    std::ifstream fragShaderFileStream;
 
-    vertexShaderFileStream.open(vertexShaderFile);
-    fragShaderFileStream.open(fragShaderFile);
+    auto vShader = createShader(vertexShaderFile, GL_VERTEX_SHADER);
+    auto fShader = createShader(fragShaderFile, GL_FRAGMENT_SHADER);
 
-    std::stringstream vertexShaderStringStream;
-    std::stringstream fragShaderStringStream;
+    unsigned gShader = 0;
+    if (!geoShaderFile.empty())
+    {
+        createShader(geoShaderFile, GL_GEOMETRY_SHADER);
+    }
 
-    vertexShaderStringStream << vertexShaderFileStream.rdbuf();
-    fragShaderStringStream << fragShaderFileStream.rdbuf();
 
-    vertexShaderFileStream.close();
-    fragShaderFileStream.close();
 
-    std::string vertexShaderCode = vertexShaderStringStream.str();
-    std::string fragShaderCode = fragShaderStringStream.str();
-    const char* vCode = vertexShaderCode.c_str();
-    const char* fCode = fragShaderCode.c_str();
 
     int success = 0;
     char log[512];
-    unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vShader, 1,&vCode, NULL);
-    glCompileShader(vShader);
-
-    glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vShader, 512, NULL, log);
-        std::cout << vertexShaderFile <<"  ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << log << std::endl;
-    }
-
-    unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1, &fCode, NULL);
-    glCompileShader(fShader);
-
-    glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fShader, 512, NULL, log);
-        std::cout << fragShaderFile <<" ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << log << std::endl;
-    }
-
     m_id = glCreateProgram();
     glAttachShader(m_id, vShader);
     glAttachShader(m_id, fShader);
+    if (!geoShaderFile.empty())
+    {
+        glAttachShader(m_id, gShader);
+    }
     glLinkProgram(m_id);
     glGetProgramiv(m_id, GL_COMPILE_STATUS, &success);
     if (!success)
@@ -97,4 +72,34 @@ void Shader::setVec3(const char * name, glm::vec3 vec)
 unsigned int Shader::getProgramID()
 {
     return m_id;
+}
+
+unsigned int Shader::createShader(std::string path, unsigned int type)
+{
+    std::ifstream shaderSteam;
+    shaderSteam.open(path);
+
+    std::stringstream shaderStringStream;
+    shaderStringStream << shaderSteam.rdbuf();
+
+    shaderSteam.close();
+    
+    std::string shaderString = shaderStringStream.str();
+    const char* shaderCode = shaderString.c_str();
+
+    int success = 0;
+    char log[512];
+    unsigned int shader = glCreateShader(type);
+    glShaderSource(shader, 1, &shaderCode, NULL);
+    glCompileShader(shader);
+
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shader, 512, NULL, log);
+        std::cout << path << "  error" << log << std::endl;
+    }
+
+
+    return shader;
 }

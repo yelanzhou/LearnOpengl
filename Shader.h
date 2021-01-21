@@ -8,7 +8,7 @@
 class Shader
 {
 public:
-    Shader(std::string vertexShaderFile, std::string fragShaderFile);
+    Shader(std::string vertexShaderFile, std::string fragShaderFile,std::string geometryShaderFile = "");
     ~Shader();
     void Use();
     void setFloat(const char* name,float value);
@@ -19,6 +19,9 @@ public:
     unsigned int getProgramID();
 
 private:
+
+    unsigned int createShader(std::string Path,unsigned int type);
+
     unsigned int m_id;
 };
 
