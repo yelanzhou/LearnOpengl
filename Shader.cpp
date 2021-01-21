@@ -10,17 +10,15 @@ Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile,std::str
     auto vShader = createShader(vertexShaderFile, GL_VERTEX_SHADER);
     auto fShader = createShader(fragShaderFile, GL_FRAGMENT_SHADER);
 
-    unsigned gShader = 0;
+    unsigned int gShader = 0;
     if (!geoShaderFile.empty())
     {
-        createShader(geoShaderFile, GL_GEOMETRY_SHADER);
+        gShader = createShader(geoShaderFile, GL_GEOMETRY_SHADER);
     }
 
 
-
-
     int success = 0;
-    char log[512];
+    char log[1024];
     m_id = glCreateProgram();
     glAttachShader(m_id, vShader);
     glAttachShader(m_id, fShader);
@@ -28,8 +26,9 @@ Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile,std::str
     {
         glAttachShader(m_id, gShader);
     }
+
     glLinkProgram(m_id);
-    glGetProgramiv(m_id, GL_COMPILE_STATUS, &success);
+    glGetProgramiv(m_id, GL_LINK_STATUS, &success);
     if (!success)
     {
         glGetProgramInfoLog(m_id, 1024, NULL, log);
@@ -38,6 +37,10 @@ Shader::Shader(std::string vertexShaderFile, std::string fragShaderFile,std::str
     
     glDeleteShader(vShader);
     glDeleteShader(fShader);
+    if (!geoShaderFile.empty())
+    {
+        glDeleteShader(gShader);
+    }
 }
 
 Shader::~Shader()

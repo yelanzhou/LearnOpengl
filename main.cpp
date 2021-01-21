@@ -25,6 +25,12 @@ float lastFrame = 0.0f;
 // world space positions of our cubes
 
 
+float points[] = {
+    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
+     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
+    -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
+};
 
 int main()
 {
@@ -39,21 +45,30 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    unsigned int VAO;
+    unsigned int VBO;
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
 
-    Shader shader("../../shader_source/uniform_buffer.vert", "../../shader_source/uniform_buffer.frag");
-    CubeModel  cube("../../textures/container2.png", "../../textures/container2_specular.png");
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    glBindVertexArray(0);
 
 
-    unsigned int uniformBuffer;
-    glGenBuffers(1, &uniformBuffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer);
-    glBufferData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniformBuffer, 0, 3 * sizeof(glm::mat4));
-    unsigned int uniformBlockIndexRed = glGetUniformBlockIndex(shader.getProgramID(), "MVP");
-    glUniformBlockBinding(shader.getProgramID(), uniformBlockIndexRed, 0);
+
+    glBindVertexArray(0);
+
+
+
+    Shader shader("../../shader_source/geometry.vert", "../../shader_source/geometry.frag","../../shader_source/geometry.gs");
 
 
     // render loop
@@ -74,27 +89,19 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
         // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(g_camera.GetZoom()), (float)800 / (float)600, 0.1f, 100.0f);
-
-   
-
-        shader.Use();
-        
+        glm::mat4 projection = glm::perspective(glm::radians(g_camera.GetZoom()), (float)800 / (float)600, 0.1f, 100.0f); 
         glm::mat4 view = g_camera.GetVieMatrix();
         glm::mat4 model = glm::mat4(1.0f);   
 
-        glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
-        glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(model));
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
-        
+        shader.Use();
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_POINTS, 0, 4);
 
 
 
        
 
-        cube.draw(shader);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
