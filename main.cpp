@@ -25,16 +25,18 @@ float lastFrame = 0.0f;
 // world space positions of our cubes
 
 
-float quadVertices1[] = {
-    // positions     // colors
-    -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-     0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-    -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+float planeVertices1[] = {
+    // positions            // normals         // texcoords
+     10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+    -10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+    -10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
 
-    -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-     0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-     0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+     10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+    -10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
+     10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
 };
+
+glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 
 int main()
 {
@@ -48,26 +50,7 @@ int main()
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glm::vec2 translations[100];
-    int index = 0;
-    float offset = 0.1f;
-    for (int y = -10; y < 10; y += 2)
-    {
-        for (int x = -10; x < 10; x += 2)
-        {
-            glm::vec2 translation;
-            translation.x = (float)x / 10.0f + offset;
-            translation.y = (float)y / 10.0f + offset;
-            translations[index++] = translation;
-        }
-    }
-
-    unsigned int instanceVBO;
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glEnable(GL_FRAMEBUFFER_SRGB);
 
 
     unsigned int VAO;
@@ -79,28 +62,22 @@ int main()
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices1), &quadVertices1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices1), &planeVertices1, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),(void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),(void*) 0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
-
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glBindVertexArray(0);
 
+    Image2D image("../../textures/Wood.png");
+    Texture2D texture;
+    texture.setImage(image);
 
-
-
-
-
-    Shader shader("../../shader_source/instance.vert", "../../shader_source/instance.frag");
-
+    Shader shader("../../shader_source/bling_phong.vert", "../../shader_source/bling_phong.frag");
+    shader.Use();
+    shader.setInt("diffuse1", 0);
 
     // render loop
     // -----------
@@ -125,7 +102,25 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);   
 
         shader.Use();
+        shader.setMarix4f("projection", projection);
+        shader.setMarix4f("view", view);
+        shader.setMarix4f("model", model);
+        shader.setInt("bling", 1);
+        shader.setVec3("view_pos", g_camera.GetPosition());
+        
+        shader.setVec3("light_pos", lightPos);
+
+       
+
+
+
+
         glBindVertexArray(VAO);
+        glActiveTexture(GL_TEXTURE0);
+
+        texture.bind();
+
+
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100); // 100 triangles of 6 vertices each
         glBindVertexArray(0);
 
